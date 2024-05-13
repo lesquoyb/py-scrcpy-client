@@ -165,11 +165,11 @@ class Client:
                     Network.LOCAL_ABSTRACT, "scrcpy"
                 )
                 break
-            except AdbError:
+            except AdbError as e:
                 sleep(0.1)
                 pass
         else:
-            raise ConnectionError("Failed to connect scrcpy-server after 3 seconds")
+            raise ConnectionError(f"Failed to connect scrcpy-server after {self.connection_timeout} ms")
 
         dummy_byte = self.__video_socket.recv(1)
         if not len(dummy_byte) or dummy_byte != b"\x00":
@@ -206,7 +206,7 @@ class Client:
             "log_level=info",
             f"max_size={self.max_width}",
             f"max_fps={self.max_fps}",
-            f"video_bit_rate={self.bitrate}",
+            f"video_bit_rate={self.video_bitrate}",
             "tunnel_forward=true",
             "send_frame_meta=false",
             f"control={self.control_enabled}",
@@ -245,7 +245,6 @@ class Client:
             commands += ["no_audio"]
         if self.audio_bitrate:
             commands += [f"audio_bitrate={self.audio_bitrate}"]
-
 
         self.__server_stream: AdbConnection = self.device.shell(
             commands,
