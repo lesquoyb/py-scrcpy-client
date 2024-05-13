@@ -38,9 +38,10 @@ class MainWindow(QMainWindow):
         self.client = scrcpy.Client(
             device=self.device,
             flip=self.ui.flip.isChecked(),
-            bitrate=1000000000,
-            encoder_name=encoder_name,
-            max_fps=60
+            video_bitrate=100000000,
+            video_encoder_name=encoder_name,
+            max_fps=30,
+            video_codec="h265"
         )
         self.client.add_listener(scrcpy.EVENT_INIT, self.on_init)
         self.client.add_listener(scrcpy.EVENT_FRAME, self.on_frame)
@@ -157,7 +158,7 @@ class MainWindow(QMainWindow):
                 frame.shape[1],
                 frame.shape[0],
                 frame.shape[1] * 3,
-                QImage.Format_BGR888,
+                QImage.Format.Format_BGR888,
             )
             pix = QPixmap(image)
             pix.setDevicePixelRatio(1 / ratio)
